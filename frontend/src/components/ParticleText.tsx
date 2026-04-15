@@ -4,15 +4,10 @@ interface Particle {
   x: number; y: number
   homeX: number; homeY: number
   vx: number; vy: number
-  size: number; color: string
-  friction: number; life: number
+  size: number; color: string; friction: number
 }
 
-const COLORS = [
-  '#4F46E5','#6366F1','#7C3AED','#8B5CF6',
-  '#0D9488','#14B8A6','#2DD4BF',
-  '#F59E0B','#EF4444',
-]
+const COLORS = ['#4F46E5','#6366F1','#7C3AED','#8B5CF6','#0D9488','#14B8A6','#2DD4BF','#F59E0B']
 
 export default function ParticleText() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -23,16 +18,21 @@ export default function ParticleText() {
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
+    // From here, canvas and ctx are guaranteed non-null.
+    // We capture them in local consts so TypeScript trusts them inside nested functions.
+    const c: HTMLCanvasElement = canvas
+    const g: CanvasRenderingContext2D = ctx
+
     let particles: Particle[] = []
     let animId: number
     let W = 0, H = 0
 
     function resize() {
-      W = canvas.offsetWidth
-      H = canvas.offsetHeight
-      canvas.width = W * window.devicePixelRatio
-      canvas.height = H * window.devicePixelRatio
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio)
+      W = c.offsetWidth
+      H = c.offsetHeight
+      c.width = W * window.devicePixelRatio
+      c.height = H * window.devicePixelRatio
+      g.scale(window.devicePixelRatio, window.devicePixelRatio)
       buildParticles()
     }
 
@@ -64,22 +64,20 @@ export default function ParticleText() {
           const i = (y * W + x) * 4
           if (imgData[i + 3] > 120) {
             particles.push({
-              x: Math.random() * W,
-              y: Math.random() * H,
+              x: Math.random() * W, y: Math.random() * H,
               homeX: x, homeY: y,
               vx: (Math.random() - 0.5) * 8,
               vy: (Math.random() - 0.5) * 8,
               size: 1.2 + Math.random() * 1.8,
               color: COLORS[Math.floor(Math.random() * COLORS.length)],
               friction: 0.86 + Math.random() * 0.08,
-              life: Math.random(),
             })
           }
         }
       }
     }
 
-    function explode(ex: number, ey: number, strength = 22) {
+    function explode(ex: number, ey: number, strength: number) {
       const radius = 160
       particles.forEach(p => {
         const dx = p.x - ex, dy = p.y - ey
@@ -94,65 +92,47 @@ export default function ParticleText() {
     }
 
     function onMouseMove(e: MouseEvent) {
-      const r = canvas.getBoundingClientRect()
-      explode(e.clientX - r.left, e.clientY - r.top, 6)
+      const r = c.getBoundingClientRect()
+      explode(e.clientX - r.left, e.clientY - r.top, 5)
     }
-
     function onClick(e: MouseEvent) {
-      const r = canvas.getBoundingClientRect()
+      const r = c.getBoundingClientRect()
       explode(e.clientX - r.left, e.clientY - r.top, 28)
     }
-
     function onTouch(e: TouchEvent) {
-      const r = canvas.getBoundingClientRect()
-      const t = e.touches[0]
-      explode(t.clientX - r.left, t.clientY - r.top, 28)
+      const r = c.getBoundingClientRect()
+      explode(e.touches[0].clientX - r.left, e.touches[0].clientY - r.top, 28)
     }
 
-    canvas.addEventListener('mousemove', onMouseMove)
-    canvas.addEventListener('click', onClick)
-    canvas.addEventListener('touchstart', onTouch)
+    c.addEventListener('mousemove', onMouseMove)
+    c.addEventListener('click', onClick)
+    c.addEventListener('touchstart', onTouch)
 
     const spring = 0.055
 
     function animate() {
-      if (!ctx) return;
-
-      ctx.clearRect(0, 0, W, H)
-
+      g.clearRect(0, 0, W, H)
       particles.forEach(p => {
-        // Spring toward home
-        const dx = p.homeX - p.x
-        const dy = p.homeY - p.y
-        p.vx += dx * spring
-        p.vy += dy * spring
-
-        // Friction / damping
+        p.vx += (p.homeX - p.x) * spring
+        p.vy += (p.homeY - p.y) * spring
         p.vx *= p.friction
         p.vy *= p.friction
-
         p.x += p.vx
         p.y += p.vy
 
-        // Glow based on velocity
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
-        const glow = Math.min(speed * 1.5, 8)
-
-        if (!ctx) return; // Redundant but safe
-
-        ctx.save()
-        if (glow > 1) {
-          ctx.shadowColor = p.color
-          ctx.shadowBlur = glow
+        g.save()
+        if (speed > 1) {
+          g.shadowColor = p.color
+          g.shadowBlur = Math.min(speed * 1.5, 8)
         }
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, p.size + speed * 0.15, 0, Math.PI * 2)
-        ctx.fillStyle = p.color
-        ctx.globalAlpha = 0.85 + Math.min(speed * 0.03, 0.15)
-        ctx.fill()
-        ctx.restore()
+        g.beginPath()
+        g.arc(p.x, p.y, p.size + speed * 0.15, 0, Math.PI * 2)
+        g.fillStyle = p.color
+        g.globalAlpha = Math.min(0.85 + speed * 0.03, 1)
+        g.fill()
+        g.restore()
       })
-
       animId = requestAnimationFrame(animate)
     }
 
@@ -160,13 +140,13 @@ export default function ParticleText() {
     animate()
 
     const ro = new ResizeObserver(resize)
-    ro.observe(canvas)
+    ro.observe(c)
 
     return () => {
       cancelAnimationFrame(animId)
-      canvas.removeEventListener('mousemove', onMouseMove)
-      canvas.removeEventListener('click', onClick)
-      canvas.removeEventListener('touchstart', onTouch)
+      c.removeEventListener('mousemove', onMouseMove)
+      c.removeEventListener('click', onClick)
+      c.removeEventListener('touchstart', onTouch)
       ro.disconnect()
     }
   }, [])
@@ -175,27 +155,16 @@ export default function ParticleText() {
     <div style={{ position: 'relative', width: '100%' }}>
       <canvas
         ref={canvasRef}
-        style={{
-          width: '100%',
-          height: 'clamp(160px, 22vw, 240px)',
-          display: 'block',
-          cursor: 'crosshair',
-        }}
+        style={{ width: '100%', height: 'clamp(160px, 22vw, 240px)', display: 'block', cursor: 'crosshair' }}
       />
       <p style={{
         textAlign: 'center', fontSize: 11, color: 'var(--text-faint)',
         letterSpacing: 1.5, textTransform: 'uppercase', fontWeight: 600,
-        marginTop: 6, marginBottom: 0,
-        animation: 'fadeInHint 2s ease 1.5s both',
+        marginTop: 6, marginBottom: 0, animation: 'fadeInHint 2s ease 1.5s both',
       }}>
         ✦ click or hover to interact
       </p>
-      <style>{`
-        @keyframes fadeInHint {
-          from { opacity: 0; transform: translateY(4px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-      `}</style>
+      <style>{`@keyframes fadeInHint { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }`}</style>
     </div>
   )
 }
