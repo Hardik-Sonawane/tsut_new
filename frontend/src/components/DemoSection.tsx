@@ -116,12 +116,15 @@ export default function DemoSection() {
         callHuggingFace('summarize: ' + text.slice(0, 512), 'hardiksonawane/tsut-t5-finetuned'),
       ])
 
+      const bartError = bartRes.status === 'rejected' ? (bartRes.reason?.message || 'API Error') : '';
+      const t5Error = t5Res.status === 'rejected' ? (t5Res.reason?.message || 'API Error') : '';
+
       const bartText = bartRes.status === 'fulfilled'
         ? bartRes.value
-        : extractiveSummarize(text, 2) + ' (API unavailable — extractive fallback)'
+        : extractiveSummarize(text, 2) + ` \n\n[System Note: Fallback used because ${bartError}]`;
       const t5Text = t5Res.status === 'fulfilled'
         ? t5Res.value
-        : extractiveSummarize(text, 2) + ' (API unavailable — extractive fallback)'
+        : extractiveSummarize(text, 2) + ` \n\n[System Note: Fallback used because ${t5Error}]`;
 
       setResult({ bart: bartText, t5: t5Text })
     } catch (e: any) {
