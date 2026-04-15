@@ -1,5 +1,5 @@
 // Vercel Serverless Function - Secure HuggingFace Proxy
-// Uses the NEW 2025 HuggingFace router endpoint
+// Uses the NEW 2025 HuggingFace router endpoint: router.huggingface.co/hf-inference
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
@@ -13,13 +13,9 @@ export default async function handler(req, res) {
   if (!model || !inputs) return res.status(400).json({ error: 'Missing model or inputs' })
 
   const HF_TOKEN = process.env.HF_TOKEN
-
-  if (!HF_TOKEN) {
-    return res.status(500).json({ error: 'HF_TOKEN not configured in environment variables' })
-  }
+  if (!HF_TOKEN) return res.status(500).json({ error: 'HF_TOKEN not configured in Vercel environment variables' })
 
   try {
-    // Use the NEW HuggingFace router endpoint (api-inference.huggingface.co is decommissioned)
     const hfRes = await fetch(
       `https://router.huggingface.co/hf-inference/models/${model}`,
       {
@@ -32,14 +28,14 @@ export default async function handler(req, res) {
       }
     )
 
-    const text = await hfRes.text()
+    const rawText = await hfRes.text()
 
     let data
     try {
-      data = JSON.parse(text)
+      data = JSON.parse(rawText)
     } catch {
       return res.status(502).json({
-        error: `HuggingFace returned non-JSON response (status ${hfRes.status}): ${text.slice(0, 200)}`
+        error: `HuggingFace returned non-JSON (HTTP ${hfRes.status}): ${rawText.slice(0, 200)}`
       })
     }
 
