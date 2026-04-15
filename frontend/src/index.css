@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Light Premium Palette */
+  --bg-page:        #F7F6F3;
+  --bg-warm:        #FDFCFA;
+  --bg-card:        #FFFFFF;
+  --bg-card-hover:  #FAFAFA;
+  --bg-subtle:      #F1EFE9;
+  --bg-muted:       #EAE8E1;
+
+  --border:         #E4E1D8;
+  --border-strong:  #D4D0C5;
+
+  --text-primary:   #1A1816;
+  --text-secondary: #4A4740;
+  --text-muted:     #8B8880;
+  --text-faint:     #BAB8B3;
+
+  /* Brand Colors */
+  --indigo:         #4F46E5;
+  --indigo-light:   #EEF2FF;
+  --indigo-mid:     #C7D2FE;
+
+  --violet:         #7C3AED;
+  --violet-light:   #F5F3FF;
+
+  --amber:          #D97706;
+  --amber-light:    #FFFBEB;
+  --amber-mid:      #FDE68A;
+
+  --emerald:        #059669;
+  --emerald-light:  #ECFDF5;
+
+  --rose:           #E11D48;
+  --rose-light:     #FFF1F2;
+
+  --teal:           #0D9488;
+  --teal-light:     #F0FDFA;
+
+  /* BART / T5 brand */
+  --bart:           #4F46E5;
+  --bart-light:     #EEF2FF;
+  --t5:             #0D9488;
+  --t5-light:       #F0FDFA;
+
+  --radius-sm:      8px;
+  --radius:         14px;
+  --radius-lg:      20px;
+  --radius-xl:      28px;
+
+  --shadow-sm:      0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:         0 4px 16px rgba(0,0,0,.07), 0 1px 4px rgba(0,0,0,.04);
+  --shadow-md:      0 8px 32px rgba(0,0,0,.09), 0 2px 8px rgba(0,0,0,.05);
+  --shadow-lg:      0 20px 60px rgba(0,0,0,.12), 0 4px 16px rgba(0,0,0,.06);
+  --shadow-indigo:  0 8px 24px rgba(79,70,229,.18);
+  --shadow-amber:   0 8px 24px rgba(217,119,6,.18);
+
+  --transition:     .2s cubic-bezier(.4,0,.2,1);
+  --font:           'Inter', -apple-system, sans-serif;
+  --mono:           'JetBrains Mono', monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-subtle); }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+/* Selection */
+::selection { background: var(--indigo-mid); color: var(--indigo); }
