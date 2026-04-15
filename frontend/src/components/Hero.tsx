@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { DATA } from '../data'
-import ParticleText from './ParticleText'
 
 function useCounter(target: number, duration = 1200, trigger: boolean) {
   const [val, setVal] = useState(0)
@@ -81,10 +80,20 @@ export default function Hero() {
           Deep Learning · NLP · Transformer Models
         </div>
 
-        {/* Particle Title */}
-        <div style={{ marginBottom: 20 }}>
-          <ParticleText />
-        </div>
+        {/* Title */}
+        <h1 style={{
+          fontSize: 'clamp(38px, 6vw, 76px)', fontWeight: 900,
+          letterSpacing: '-3px', lineHeight: 1.0, marginBottom: 20, color: 'var(--text-primary)',
+        }}>
+          Text Summarization<br />
+          <span style={{
+            background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 40%, #0D9488 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+            display: 'inline-block',
+          }}>
+            Using Transformers
+          </span>
+        </h1>
 
         {/* Sub */}
         <p style={{
