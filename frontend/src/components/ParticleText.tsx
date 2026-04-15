@@ -116,6 +116,8 @@ export default function ParticleText() {
     const spring = 0.055
 
     function animate() {
+      if (!ctx) return;
+
       ctx.clearRect(0, 0, W, H)
 
       particles.forEach(p => {
@@ -135,6 +137,8 @@ export default function ParticleText() {
         // Glow based on velocity
         const speed = Math.sqrt(p.vx * p.vx + p.vy * p.vy)
         const glow = Math.min(speed * 1.5, 8)
+
+        if (!ctx) return; // Redundant but safe
 
         ctx.save()
         if (glow > 1) {
