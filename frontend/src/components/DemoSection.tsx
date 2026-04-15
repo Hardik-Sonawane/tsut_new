@@ -124,11 +124,16 @@ export default function DemoSection() {
         : extractiveSummarize(text, 2) + ' (API unavailable — extractive fallback)'
 
       setResult({ bart: bartText, t5: t5Text })
-    } catch (e) {
-      const extSummary = extractiveSummarize(text, 3)
+    } catch (e: any) {
+      const errorMsg = e.message || 'HuggingFace API unavailable';
+      const extSummary = extractiveSummarize(text, 2)
       setResult({
-        bart: `${extSummary} (Extractive fallback — HuggingFace API unavailable)`,
-        t5:   `${extractiveSummarize(text, 2)} (Extractive fallback — HuggingFace API unavailable)`,
+        bart: `${extSummary} 
+
+[System Note: Fallback used because ${errorMsg}]`,
+        t5:   `${extractiveSummarize(text, 2)} 
+
+[System Note: Fallback used because ${errorMsg}]`,
       })
     } finally {
       setLoading(false)
