@@ -113,7 +113,7 @@ export default function DemoSection() {
       // Call both models in parallel
       const [bartRes, t5Res] = await Promise.allSettled([
         callHuggingFace(text.slice(0, 1024), 'facebook/bart-large-cnn'),
-        callHuggingFace('summarize: ' + text.slice(0, 512), 'google-t5/t5-small'),
+        callHuggingFace('summarize: ' + text.slice(0, 512), 'hardiksonawane/tsut-t5-finetuned'),
       ])
 
       const bartText = bartRes.status === 'fulfilled'
