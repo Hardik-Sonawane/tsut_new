@@ -296,7 +296,7 @@ export default function DemoSection() {
             {/* API note */}
             {mode === 'api' && (
               <p style={{ fontSize: 12, color: 'var(--text-muted)', textAlign: 'center', marginTop: 8 }}>
-                Calls HuggingFace Inference API (facebook/bart-large-cnn & google-t5/t5-small) · No backend required · Falls back to extractive if unavailable
+                Calls HuggingFace Inference API (facebook/bart-large-cnn & hardiksonawane/tsut-t5-finetuned) · No backend required · Falls back to extractive if unavailable
               </p>
             )}
           </div>
