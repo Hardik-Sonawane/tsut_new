@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react';
 
 interface Particle {
   x: number; y: number
@@ -7,16 +7,17 @@ interface Particle {
   size: number; color: string; friction: number
 }
 
-const COLORS = ['#4F46E5','#6366F1','#7C3AED','#8B5CF6','#0D9488','#14B8A6','#2DD4BF','#F59E0B']
+const COLORS = ['#4F46E5', '#6366F1', '#7C3AED', '#8B5CF6', '#0D9488', '#14B8A6', '#2DD4BF', '#F59E0B']
 
 export default function ParticleText() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
 
     // From here, canvas and ctx are guaranteed non-null.
     // We capture them in local consts so TypeScript trusts them inside nested functions.
