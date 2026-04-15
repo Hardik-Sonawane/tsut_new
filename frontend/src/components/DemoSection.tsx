@@ -120,9 +120,11 @@ export default function DemoSection() {
 
     try {
       // Call both models in parallel
+      // T5 uses google-t5/t5-small (same architecture as our fine-tuned model)
+      // until custom model Inference API is fully activated on HuggingFace
       const [bartRes, t5Res] = await Promise.allSettled([
         callHuggingFace(text.slice(0, 1024), 'facebook/bart-large-cnn'),
-        callHuggingFace('summarize: ' + text.slice(0, 512), 'hardiksonawane/tsut-t5-finetuned'),
+        callHuggingFace('summarize: ' + text.slice(0, 512), 'google-t5/t5-small'),
       ])
 
       const bartError = bartRes.status === 'rejected' ? (bartRes.reason?.message || 'API Error') : '';
