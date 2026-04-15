@@ -58,23 +58,32 @@ function extractiveSummarize(text: string, maxSentences = 3): string {
 }
 
 async function callHuggingFace(text: string, model: string): Promise<string> {
-  const res = await fetch(
-    `https://api-inference.huggingface.co/models/${model}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        inputs: text,
-        parameters: { max_length: 130, min_length: 30, do_sample: false },
-      }),
-      signal: AbortSignal.timeout(25000),
-    }
-  )
-  if (!res.ok) throw new Error(`API error: ${res.status}`)
+  // Call our own Vercel serverless proxy instead of HuggingFace directly.
+  // This fixes CORS issues and keeps the API token secure on the server side.
+  const res = await fetch('/api/summarize', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      inputs: text,
+      parameters: { max_length: 130, min_length: 30, do_sample: false },
+    }),
+    signal: AbortSignal.timeout(30000),
+  })
+
   const data = await res.json()
+
+  // Handle HuggingFace "model is loading" response gracefully
+  if (data?.error) {
+    if (data.error.includes('loading')) {
+      throw new Error('⏳ Model is waking up. Please wait 20 seconds and try again.')
+    }
+    throw new Error(data.error)
+  }
+
+  if (!res.ok) throw new Error(`API error: ${res.status}`)
   if (Array.isArray(data) && data[0]?.summary_text) return data[0].summary_text
-  if (data.error) throw new Error(data.error)
-  throw new Error('Unexpected response')
+  throw new Error('Unexpected response format from API')
 }
 
 export default function DemoSection() {
